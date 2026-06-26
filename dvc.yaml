@@ -1,0 +1,8 @@
+stages:
+  data_ingestion:
+    cmd: python src/data/data_processing.py
+    deps:
+    - data/raw/uncleaned_swiggy.xls
+    - src/data/data_processing.py
+    outs:
+    - data/processed
