@@ -1,0 +1,11 @@
+data_spliting:
+  test_size: 0.3
+  random_state: 42
+
+optuna:
+  n_trials: 30
+  cv: 5
+
+final_model:
+  n_estimators: 500
+  random_state: 42

@@ -8,6 +8,20 @@ import pickle
 import os
 import yaml
 
+# loading params.yaml file
+with open('params.yaml','r') as file:
+    params = yaml.safe_load(file)
+
+# getting only data spliting params
+data_split_params = params['data_spliting']
+
+# optuna params
+optuna_params = params['optuna']
+
+# model params 
+model_params = params['final_model']
+
+
 
 # loading processsed data set
 new_df = pd.read_csv("./data/interim/new_df.csv")
@@ -24,7 +38,7 @@ y = new_df['delivery_time']
 
 # spliting data
 from sklearn.model_selection import train_test_split
-X_train,X_test,y_train,y_test = train_test_split(X,y,test_size = 0.2, random_state = 42)
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size = data_split_params['test_size'], random_state = data_split_params['random_state'])
 
 # seperating numerical and categorical columns
 num_cols = X.select_dtypes(include=['int64','float64','int32']).columns
@@ -154,7 +168,7 @@ def objective(trial):
         new_pipe,
         X_train,
         y_train,
-        cv = 5,
+        cv = optuna_params['cv'],
         scoring= 'neg_mean_absolute_error'
     )
 
@@ -163,7 +177,7 @@ def objective(trial):
 
 # creating optuna study
 study = optuna.create_study(direction='minimize')
-study.optimize(objective, n_trials=30)       
+study.optimize(objective, n_trials=optuna_params['n_trials'])       
 
 # fetching best parametrs and its value
 print('best_params: ', study.best_params)
@@ -175,8 +189,8 @@ best_params.pop("model")
 # building the final model
 final_model = LGBMRegressor(
     **best_params,
-    n_estimators=500,
-    random_state=42,
+    n_estimators= model_params['n_estimators'],
+    random_state=model_params['random_state'],
     n_jobs=-1,
     verbose=-1
 )
