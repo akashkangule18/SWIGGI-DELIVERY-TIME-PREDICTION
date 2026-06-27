@@ -119,3 +119,4 @@ df['city_name'] = df['rider_id'].str.split('res').str.get(0)
 data_path = os.path.join('data','processed')
 os.makedirs(data_path,exist_ok=True)
 df.to_csv(os.path.join(data_path,'data.csv'),index=False)
+ 
