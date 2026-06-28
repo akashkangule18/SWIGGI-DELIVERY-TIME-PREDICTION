@@ -1,0 +1,6 @@
+age,rating,weather_cond,traffic,vehicle_cond,vehicle_type,multiple_orders,festival,city_type,city_name,month,weekend,ordered_hour,distance_km
+34.0,4.8,cloudy,medium,0,motorcycle,1.0,no,metropolitian,pune,3,0,17.0,13.79
+31.0,4.5,fog,low,2,electric_scooter,0.0,no,metropolitian,vad,3,0,22.0,9.44
+21.0,4.8,fog,low,0,motorcycle,1.0,no,metropolitian,coimb,3,0,23.0,17.14
+21.0,4.9,fog,medium,1,scooter,1.0,no,metropolitian,alh,2,0,18.0,11.98
+35.0,4.6,windy,jam,0,motorcycle,2.0,no,metropolitian,indo,3,0,19.0,16.64

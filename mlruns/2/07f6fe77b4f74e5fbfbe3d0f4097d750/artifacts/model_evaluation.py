@@ -10,14 +10,6 @@ import yaml
 import json
 from logger import logger
 
-
-# dagshub server connection
-dagshub.init(repo_owner='akashkangule18', repo_name='SWIGGI-DELIVERY-TIME-PREDICTION', mlflow=True)
-
-# fetching the mlflow client
-from mlflow import MlflowClient
-client = MlflowClient()
-
 # load yaml file
 def load_yaml(file_path):
     try:
@@ -139,13 +131,6 @@ def main():
             mlflow.log_artifact(__file__)
             mlflow.log_artifact('reports/metrics.json')
 
-            # logging model input 
-
-            model_input = X_train.head(5)
-
-            model_input.to_csv("model_input.csv", index=False)
-            mlflow.log_artifact("model_input.csv")
-
             # signature
             signature = mlflow.models.infer_signature(X_train,model.predict(X_train))
 
@@ -157,24 +142,6 @@ def main():
                 registered_model_name='LightGBMRegressor',
                 serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE
             )
-
-            versions = client.search_model_versions(
-                "name='LightGBMRegressor'"
-            )
-
-            latest_version = max(
-                int(v.version)
-                for v in versions
-            )
-
-            client.set_registered_model_alias(
-                name = "LightGBMRegressor",
-                alias= "staging",
-                version= str(latest_version)
-            )
-
-            logger.info('model pushes to staging stage')
-
 
 
 if __name__ == '__main__':

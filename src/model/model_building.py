@@ -94,7 +94,7 @@ def main():
 
         # spliting data
     from sklearn.model_selection import train_test_split
-    X_train,X_test,y_train,y_test = train_test_split(X,y,test_size = data_split_params['test_size'], random_state = data_split_params['random_state'])
+    X_train,X_test,y_train,y_test = train_test_split(X,y,test_size = data_split_params['test_size'], random_state = 42)
 
     # seperating numerical and categorical columns
     num_cols = X.select_dtypes(include=['int64','float64','int32']).columns
@@ -244,7 +244,7 @@ def main():
     final_model = LGBMRegressor(
         **best_params,
         n_estimators= model_params['n_estimators'],
-        random_state=model_params['random_state'],
+        random_state=42,
         n_jobs=-1,
         verbose=-1
     )
