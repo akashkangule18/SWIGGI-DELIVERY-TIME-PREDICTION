@@ -1,0 +1,6 @@
+[core]
+    remote = myremote
+['remote "myreomte"']
+    url = ../aws/swiggy-dvc-bucket
+['remote "myremote"']
+    url = s3://swiggy-dvc-bucket

@@ -18,6 +18,10 @@ stages:
     deps:
     - data/interim
     - src/model/model_building.py
+    params:
+    - data_spliting
+    - optuna
+    - final_model
     outs:
     - models
   model_evaluation:

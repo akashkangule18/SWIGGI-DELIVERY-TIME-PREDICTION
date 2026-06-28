@@ -1,7 +1,7 @@
 import logging
 import os
 
-os.makedirs("logs")
+os.makedirs("logs",exist_ok=True)
 
 logger = logging.getLogger('Akki')
 logger.setLevel('DEBUG')
