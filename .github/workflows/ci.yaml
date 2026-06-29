@@ -14,8 +14,7 @@ jobs:
       DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
 
     steps:
-
-      # Checkout repository
+      # Checkout Repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -25,7 +24,7 @@ jobs:
         with:
           python-version: "3.13"
 
-      # Install dependencies
+      # Install Requirements
       - name: Install Requirements
         run: |
           python -m pip install --upgrade pip
@@ -42,8 +41,8 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build \
-          -t akkikangule18/swiggy:${{ github.sha }} \
-          -t akkikangule18/swiggy:latest .
+            -t akkikangule18/swiggy:${{ github.sha }} \
+            -t akkikangule18/swiggy:latest .
 
       # Run Docker Container
       - name: Run Docker Container
@@ -55,14 +54,33 @@ jobs:
             -p 8000:8000 \
             akkikangule18/swiggy:latest
 
-      # Wait for API to start
+      # Wait for FastAPI
       - name: Wait for API
-        run: sleep 20
+        run: sleep 30
 
-      # Test Home API
+      # Show Running Containers
+      - name: Running Containers
+        if: always()
+        run: |
+          docker ps -a
+
+      # Show Container Logs
+      - name: Container Logs
+        if: always()
+        run: |
+          docker logs swiggy
+
+      # Test API
       - name: Test API
         run: |
-          curl http://localhost:8000/
+          curl --retry 10 --retry-delay 3 --retry-connrefused http://localhost:8000/
+
+      # Stop Container
+      - name: Stop Container
+        if: always()
+        run: |
+          docker stop swiggy || true
+          docker rm swiggy || true
 
       # Push Docker Images
       - name: Push Docker Images
