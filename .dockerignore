@@ -1,0 +1,54 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+myenv/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/
+
+# Documentation
+docs/
+references/
+
+# Logs
+logs/
+*.log
+
+# MLflow
+mlruns/
+
+# DVC
+.dvc/cache/
+
+# Reports
+reports/
+
+# Tests
+tests/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# AWS
+*.pem
+
+# Docker
+Dockerfile.old
+
+# Cache
+.pytest_cache/
