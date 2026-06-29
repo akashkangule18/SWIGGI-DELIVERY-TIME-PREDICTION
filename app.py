@@ -1,13 +1,12 @@
 import os
 
-import dagshub
 import mlflow
 import pandas as pd
 from fastapi import FastAPI
 from schema import DeliveryInput
 
 # ----------------------------------------------------
-# DagsHub Initialization
+# MLflow Authentication
 # ----------------------------------------------------
 
 username = os.getenv("DAGSHUB_USERNAME")
@@ -18,15 +17,15 @@ if not username or not token:
         "DAGSHUB_USERNAME or DAGSHUB_TOKEN environment variable is missing."
     )
 
-# Set MLflow credentials
 os.environ["MLFLOW_TRACKING_USERNAME"] = username
 os.environ["MLFLOW_TRACKING_PASSWORD"] = token
 
-# Initialize DagsHub
-dagshub.init(
-    repo_owner="akashkangule18",
-    repo_name="SWIGGI-DELIVERY-TIME-PREDICTION",
-    mlflow=True
+# ----------------------------------------------------
+# MLflow Tracking URI
+# ----------------------------------------------------
+
+mlflow.set_tracking_uri(
+    "https://dagshub.com/akashkangule18/SWIGGI-DELIVERY-TIME-PREDICTION.mlflow"
 )
 
 # ----------------------------------------------------
@@ -38,7 +37,7 @@ model = mlflow.sklearn.load_model(
 )
 
 # ----------------------------------------------------
-# FastAPI App
+# FastAPI
 # ----------------------------------------------------
 
 app = FastAPI(
@@ -47,9 +46,6 @@ app = FastAPI(
     description="Predict Swiggy Delivery Time using a model stored in DagsHub Model Registry."
 )
 
-# ----------------------------------------------------
-# Home Endpoint
-# ----------------------------------------------------
 
 @app.get("/")
 def home():
@@ -57,12 +53,10 @@ def home():
         "message": "Swiggy Delivery Time Prediction API is Running!"
     }
 
-# ----------------------------------------------------
-# Prediction Endpoint
-# ----------------------------------------------------
 
 @app.post("/predict")
 def predict(data: DeliveryInput):
+
     try:
         input_df = pd.DataFrame([data.model_dump()])
 
