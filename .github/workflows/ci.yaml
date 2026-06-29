@@ -37,10 +37,10 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Build Docker Image
+      # Build Docker Image (No Cache)
       - name: Build Docker Image
         run: |
-          docker build \
+          docker build --no-cache \
             -t akkikangule18/swiggy:${{ github.sha }} \
             -t akkikangule18/swiggy:latest .
 
@@ -58,22 +58,32 @@ jobs:
       - name: Wait for API
         run: sleep 30
 
-      # Show Running Containers
+      # Verify app.py inside container
+      - name: Verify app.py
+        run: |
+          docker exec swiggy sh -c "head -40 /app/app.py"
+
+      # Running Containers
       - name: Running Containers
         if: always()
         run: |
           docker ps -a
 
-      # Show Container Logs
+      # Container Logs
       - name: Container Logs
         if: always()
         run: |
+          echo "========== CONTAINER LOGS =========="
           docker logs swiggy
+          echo ""
+          echo "========== DOCKER INSPECT =========="
+          docker inspect swiggy
 
       # Test API
       - name: Test API
         run: |
-          curl --retry 10 --retry-delay 3 --retry-connrefused http://localhost:8000/
+          echo "========== CURL OUTPUT =========="
+          curl -v http://localhost:8000/
 
       # Stop Container
       - name: Stop Container
