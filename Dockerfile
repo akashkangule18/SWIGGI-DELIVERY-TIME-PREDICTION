@@ -1,18 +1,22 @@
-# base image
+# Base Image
 FROM python:3.13-slim
 
-# workdir
+# Install required Linux libraries
+RUN apt-get update && apt-get install -y \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Working Directory
 WORKDIR /app
 
-# copy
-COPY . /app 
+# Copy project
+COPY . .
 
-# run
+# Install Python packages
 RUN pip install --no-cache-dir -r requirements.txt
 
-# expose ports
+# Expose FastAPI port
 EXPOSE 8000
 
-# command
+# Start API
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
-
