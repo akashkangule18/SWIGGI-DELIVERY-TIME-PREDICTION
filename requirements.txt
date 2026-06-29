@@ -7,7 +7,6 @@ lightgbm
 xgboost
 mlflow
 dagshub
-dvc[s3]
 pyyaml
 joblib
 cloudpickle

@@ -1,5 +1,5 @@
 # base image
-FROM python:3.13
+FROM python:3.13-slim
 
 # workdir
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . /app 
 
 # run
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # expose ports
 EXPOSE 8000
