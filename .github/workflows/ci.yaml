@@ -1,0 +1,71 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
+      DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+
+    steps:
+
+      # Checkout repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Setup Python
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # Install dependencies
+      - name: Install Requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Login to Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Build Docker Image
+      - name: Build Docker Image
+        run: |
+          docker build \
+          -t akkikangule18/swiggy:${{ github.sha }} \
+          -t akkikangule18/swiggy:latest .
+
+      # Run Docker Container
+      - name: Run Docker Container
+        run: |
+          docker run -d \
+            --name swiggy \
+            -e DAGSHUB_USERNAME=$DAGSHUB_USERNAME \
+            -e DAGSHUB_TOKEN=$DAGSHUB_TOKEN \
+            -p 8000:8000 \
+            akkikangule18/swiggy:latest
+
+      # Wait for API to start
+      - name: Wait for API
+        run: sleep 20
+
+      # Test Home API
+      - name: Test API
+        run: |
+          curl http://localhost:8000/
+
+      # Push Docker Images
+      - name: Push Docker Images
+        run: |
+          docker push akkikangule18/swiggy:${{ github.sha }}
+          docker push akkikangule18/swiggy:latest

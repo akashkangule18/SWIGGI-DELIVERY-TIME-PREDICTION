@@ -1,73 +1,60 @@
-from pydantic import BaseModel
-import dagshub
+import os
+
 import mlflow
 import pandas as pd
-
 from fastapi import FastAPI
 from schema import DeliveryInput
 
 
-class DeliveryInput(BaseModel):
-    age: float
-    rating: float
+# MLflow Authentication
+username = os.getenv("DAGSHUB_USERNAME")
+token = os.getenv("DAGSHUB_TOKEN")
 
-    weather_cond: str
-    traffic: str
+if not username or not token:
+    raise ValueError(
+        "DAGSHUB_USERNAME or DAGSHUB_TOKEN environment variable is missing."
+    )
 
-    vehicle_cond: int
-    vehicle_type: str
+os.environ["MLFLOW_TRACKING_USERNAME"] = username
+os.environ["MLFLOW_TRACKING_PASSWORD"] = token
 
-    multiple_orders: float
-
-    festival: str
-    city_type: str
-    city_name: str
-
-    month: int
-    weekend: int
-    ordered_hour: float
-
-    distance_km: float
-
-
-
-
-import os
-import mlflow
-
-import os
-
-import os
-import mlflow
-
+# MLflow Tracking Server
 mlflow.set_tracking_uri(
     "https://dagshub.com/akashkangule18/SWIGGI-DELIVERY-TIME-PREDICTION.mlflow"
 )
 
-os.environ["MLFLOW_TRACKING_USERNAME"] = os.getenv("DAGSHUB_USERNAME")
-os.environ["MLFLOW_TRACKING_PASSWORD"] = os.getenv("DAGSHUB_TOKEN")
 
-app = FastAPI(
-    title="Swiggy Delivery Time Prediction API"
-)
-
+# Load Registered Model
 model = mlflow.sklearn.load_model(
     "models:/LightGBMRegressor@staging"
 )
 
 
+# FastAPI
+app = FastAPI(
+    title="Swiggy Delivery Time Prediction API",
+    version="1.0",
+    description="Predict Swiggy Delivery Time using a model stored in DagsHub Model Registry."
+)
+
+
+# Home Endpoint
 @app.get("/")
 def home():
-    return {"message": "API is Running"}
+    return {
+        "message": "Swiggy Delivery Time Prediction API is Running!"
+    }
 
 
+
+# Prediction Endpoint
 @app.post("/predict")
 def predict(data: DeliveryInput):
 
-    df = pd.DataFrame([data.model_dump()])
-
     try:
-        prediction = model.predict(df)
+        input_df = pd.DataFrame([data.model_dump()])
+
+        prediction = model.predict(input_df)
 
         return {
             "Predicted Delivery Time": float(prediction[0])
@@ -77,7 +64,3 @@ def predict(data: DeliveryInput):
         return {
             "error": str(e)
         }
-
-    return {
-        "Predicted Delivery Time": float(prediction[0])
-    }
