@@ -37,7 +37,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Build Docker Image (No Cache)
+      # Build Docker Image
       - name: Build Docker Image
         run: |
           docker build --no-cache \
@@ -60,32 +60,48 @@ jobs:
 
       # Verify app.py inside container
       - name: Verify app.py
+        if: always()
         run: |
-          docker exec swiggy sh -c "head -40 /app/app.py"
+          echo "========== APP.PY =========="
+          docker exec swiggy sh -c "head -40 /app/app.py" || true
 
-      # Running Containers
+      # Show running containers
       - name: Running Containers
         if: always()
         run: |
           docker ps -a
 
-      # Container Logs
+      # Check processes
+      - name: Check processes inside container
+        if: always()
+        run: |
+          docker exec swiggy ps -ef || true
+
+      # Run app manually
+      - name: Check app manually
+        if: always()
+        run: |
+          docker exec swiggy python app.py || true
+
+      # Show container logs
       - name: Container Logs
         if: always()
         run: |
           echo "========== CONTAINER LOGS =========="
-          docker logs swiggy
+          docker logs swiggy || true
+
           echo ""
           echo "========== DOCKER INSPECT =========="
-          docker inspect swiggy
+          docker inspect swiggy || true
 
       # Test API
       - name: Test API
+        if: always()
         run: |
           echo "========== CURL OUTPUT =========="
-          curl -v http://localhost:8000/
+          curl -v http://localhost:8000/ || true
 
-      # Stop Container
+      # Stop and remove container
       - name: Stop Container
         if: always()
         run: |

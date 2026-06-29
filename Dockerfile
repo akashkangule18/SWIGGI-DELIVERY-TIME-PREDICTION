@@ -1,5 +1,5 @@
 # Base Image
-FROM python:3.13-slim
+FROM python:3.13
 
 # Install required Linux libraries
 RUN apt-get update && apt-get install -y \
